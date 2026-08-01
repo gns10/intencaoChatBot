@@ -1,0 +1,17 @@
+{
+    "greeting": {
+        "response": "Olá! Como posso ajudar você?",
+        "action": null,
+        "url": null
+    },
+    "goodbye": {
+        "response": "Até logo! Se precisar de algo, estou à disposição.",
+        "action": null,
+        "url": null
+    },
+    "thank_you": {
+        "response": "De nada! 😊",
+        "action": null,
+        "url": null
+    }
+}

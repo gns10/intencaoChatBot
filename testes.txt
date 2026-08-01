@@ -1,0 +1,15 @@
+precision é: desses 35 que o modelo marcou como x classe, quantos são de fato x classe? 30?
+recall é: desses 30 de x classe, quantos o modelo encontrou? 25 de 30?
+
+Ou seja, o recall impede falsos negativos e precision garante verdadeiros postiivos
+
+Por exemplo:
+Precision = 0.41
+Recall    = 0.80
+F1        = 0.55
+
+De 100% das frases de x classe, ele consegue identificar 80% corretamente (Recall). Mas ele confundiu outras frases e atribuiu a x classe, pois de 100% de x classe ele pode ter achado 80% como mostra em recall, mas colocou outras frases q n eram x classe, por isso cai. (precision) 
+
+e caiu pq ele tem o valor aumentado com verdadeiros positivos, como tem "falsos postivos" o precision caí.
+
+Recall é alto pq o modelo tem capacidade boa de reconhecer aqueles q de fato são x classe, mas peca em atribuir outros que não são de fato x classe
