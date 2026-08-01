@@ -1,24 +1,58 @@
+from functools import lru_cache
+from pathlib import Path
 import pickle
+import numpy as np
 from keras.models import load_model
 from keras.preprocessing.sequence import pad_sequences
-import warnings
 
-warnings.filterwarnings("ignore")
-tokenizer = pickle.load(open(r"C:\Users\gusta\Desktop\intecaoChatBot\models\tokenizer.pkl", "rb"))
-label_encoder = pickle.load(open(r"C:\Users\gusta\Desktop\intecaoChatBot\models\label_encoder.pkl", "rb"))
-model = load_model(r"C:\Users\gusta\Desktop\intecaoChatBot\models\feelings.keras")
+from src.utils import tokenizeFunc
+
+BASE_DIR = Path(__file__).resolve().parent.parent
+MODEL_PATH = BASE_DIR / "models" / "feelings.keras"
+TOKENIZER_PATH = BASE_DIR / "models" / "tokenizer.pkl"
+ENCODER_PATH = BASE_DIR / "models" / "label_encoder.pkl"
+
+# O treinamento atual usa sequências com tamanho 20.
+MAX_LEN = 20
 
 
-def predict_intent(text, model=model, tokenizer=tokenizer, label_encoder=label_encoder):
+@lru_cache(maxsize=1)
+def load_artifacts():
+    """Carrega modelo e artefatos uma única vez por processo."""
+    model = load_model(MODEL_PATH)
 
-    texto = text
+    with open(TOKENIZER_PATH, "rb") as f:
+        tokenizer = pickle.load(f)
 
-    seq = tokenizer.texts_to_sequences([texto])
+    with open(ENCODER_PATH, "rb") as f:
+        label_encoder = pickle.load(f)
 
-    seq = pad_sequences(seq)
+    return model, tokenizer, label_encoder
 
-    pred = model.predict(seq)
 
-    classe = label_encoder.inverse_transform([pred.argmax()])
+def predict_intent(text: str, threshold: float = 0.50):
+    """Classifica uma mensagem e retorna intenção, confiança e probabilidades."""
+    if not isinstance(text, str) or not text.strip():
+        raise ValueError("O texto não pode estar vazio.")
 
-    return classe[0]
+    model, tokenizer, label_encoder = load_artifacts()
+
+    treated_text = tokenizeFunc(text)
+    sequence = tokenizer.texts_to_sequences([treated_text])
+    sequence = pad_sequences(
+        sequence,
+        maxlen=MAX_LEN,
+        padding="post"
+    )
+
+    probabilities = model.predict(sequence, verbose=0)[0]
+    class_index = int(np.argmax(probabilities))
+    confidence = float(probabilities[class_index])
+    intent = str(label_encoder.inverse_transform([class_index])[0])
+
+    return {
+        "intent": intent,
+        "confidence": confidence,
+        "accepted": confidence >= threshold,
+        "probabilities": probabilities,
+    }

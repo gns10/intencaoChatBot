@@ -1,25 +1,7 @@
-import json
-import pandas as pd
 from keras.callbacks import EarlyStopping, ModelCheckpoint
 from keras.optimizers import Adam
 from src.model import model
 from src.preprocessing import X_train, y_train, X_val, y_val
-
-def read_data():
-    with open(r"C:\Users\gusta\Desktop\intecaoChatBot\clinc150\clinc150_uci\data_full.json",
-            "r", encoding="utf-8") as f:
-        dados = json.load(f)
-
-    df_train = pd.DataFrame(dados["train"], columns=["text", "intent"])
-    df_val = pd.DataFrame(dados["val"], columns=["text", "intent"])
-    df_test = pd.DataFrame(dados["test"], columns=["text", "intent"])
-
-    #send to appropriate folder (./processed)
-    df_train.to_csv("./dataset/processed/train.csv", index=False, sep=";")
-    df_val.to_csv("./dataset/processed/val.csv", index=False, sep=";")
-    df_test.to_csv("./dataset/processed/test.csv", index=False, sep=";")
-
-    return df_train, df_val, df_test
 
 # Defina um objeto ModelCheckpoint para usar os melhores pesos para este modelo
 checkpointer = ModelCheckpoint(filepath="./models/weights.best.keras", verbose=0, save_best_only=True) # save best model
@@ -44,5 +26,5 @@ history = model.fit(
                     verbose=1,callbacks=[monitor, checkpointer], epochs=45, batch_size=50, shuffle=True
 )
 
-# Salve os dados do modelo em um arquivo .keras 
+# Salve os dados do modelo em um arquivo h5 
 model.save('./models/feelings.keras')

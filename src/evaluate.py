@@ -1,10 +1,6 @@
 import pandas as pd
-from keras.models import load_model
-from src.train import history
+from src.train import model, history
 from src.preprocessing import X_test, y_test, encoder
-
-
-model = load_model(r"C:\Users\gusta\Desktop\intecaoChatBot\models\feelings.keras")
 
 loss, acc = model.evaluate(
     X_test,
