@@ -4,13 +4,13 @@ from src.predict import predict_intent
 from src.response_service import get_response
 
 st.set_page_config(
-    page_title="Intent Chatbot",
+    page_title="Intent Chatbot (EN)",
     page_icon="🤖",
     layout="centered",
 )
 
-st.title("🤖 Intent Chatbot")
-st.caption("Classificação de intenções com BiLSTM + CLINC150")
+st.title("Intent Chatbot")
+st.caption("Intent classification with BiLSTM + CLINC150")
 
 # Estado da conversa
 if "messages" not in st.session_state:
@@ -22,22 +22,22 @@ if "threshold" not in st.session_state:
 with st.sidebar:
     st.header("Configurações")
     threshold = st.slider(
-        "Confiança mínima",
+        "Minimum confidence",
         min_value=0.00,
         max_value=1.00,
         value=0.50,
         step=0.05,
-        help="Abaixo desse valor, a intenção é tratada como incerta.",
+        help="Below this value, the intent is treated as uncertain.",
     )
     st.session_state.threshold = threshold
 
-    if st.button("Limpar conversa", use_container_width=True):
+    if st.button("Clear conversation", use_container_width=True):
         st.session_state.messages = []
         st.rerun()
 
     st.divider()
-    st.write("**Modelo:** feelings.keras")
-    st.write("**Classes:** 150 intenções")
+    st.write("**Model:** feelings.keras")
+    st.write("**Classes:** 150 intents")
     st.write(f"**Threshold:** {threshold:.0%}")
 
 # Histórico
@@ -48,15 +48,15 @@ for message in st.session_state.messages:
         if message["role"] == "assistant" and message.get("metadata"):
             meta = message["metadata"]
             st.caption(
-                f"Intenção: `{meta['intent']}` · "
-                f"Confiança: `{meta['confidence']:.2%}`"
+                f"Intent: `{meta['intent']}` · "
+                f"Confidence: `{meta['confidence']:.2%}`"
             )
 
             if meta.get("url"):
-                st.link_button("Abrir link", meta["url"])
+                st.link_button("Open link", meta["url"])
 
 # Entrada
-prompt = st.chat_input("Digite sua mensagem...")
+prompt = st.chat_input("Enter your message in English...")
 
 if prompt:
     st.session_state.messages.append({
@@ -68,7 +68,7 @@ if prompt:
         st.markdown(prompt)
 
     with st.chat_message("assistant"):
-        with st.spinner("Analisando sua mensagem..."):
+        with st.spinner("Analyzing your message..."):
             try:
                 result = predict_intent(
                     prompt,
@@ -83,21 +83,21 @@ if prompt:
                     answer = response_data["response"]
                 else:
                     answer = (
-                        "Não tenho confiança suficiente para identificar "
-                        "sua intenção. Pode reformular a pergunta?"
+                        "I don't have enough confidence to identify "
+                        "your intent. Could you rephrase the question?"
                     )
 
                 st.markdown(answer)
 
                 if result["accepted"] and response_data.get("url"):
                     st.link_button(
-                        "Acessar conteúdo",
+                        "Open content",
                         response_data["url"],
                     )
 
                 st.caption(
-                    f"Intenção: `{intent}` · "
-                    f"Confiança: `{confidence:.2%}`"
+                    f"Intent: `{intent}` · "
+                    f"Confidence: `{confidence:.2%}`"
                 )
 
                 metadata = {
@@ -108,8 +108,8 @@ if prompt:
 
             except Exception as e:
                 answer = (
-                    "Ocorreu um erro ao processar a mensagem. "
-                    "Verifique se os arquivos do modelo estão disponíveis."
+                    "An error occurred while processing the message. "
+                    "Please check if the model files are available."
                 )
                 st.error(answer)
                 st.exception(e)

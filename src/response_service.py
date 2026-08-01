@@ -8,8 +8,8 @@ INTENTS_PATHS = [
 ]
 
 DEFAULT_RESPONSE = (
-    "Identifiquei a intenção, mas ainda não existe uma resposta cadastrada "
-    "para ela no intents.json."
+   "I identified the intent, but there is no registered response "
+    "for it in intents.json."
 )
 
 
