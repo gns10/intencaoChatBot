@@ -1,7 +1,8 @@
 import json
 import pickle
+import numpy as np
 import pandas as pd
-from src.preprocessing import tokenizeFunc
+from src.utils import tokenizeFunc
 from sklearn.preprocessing import LabelEncoder
 from keras.preprocessing.sequence import pad_sequences
 from tensorflow.keras.preprocessing.text import Tokenizer
@@ -75,3 +76,6 @@ X_test = pad_sequences(
     maxlen=20,
     padding="post"
 )
+
+np.save("./models/X_test.npy", X_test)
+np.save("./models/y_test.npy", y_test)
